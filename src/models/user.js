@@ -29,7 +29,6 @@ const find = async(table, data) => {
             const { rows } = await db.query(`${SelectQuery}`, colval);
             return rows;
         } else {
-            console.log(table);
             const { rows } = await db.query(`select * from ${table}`);
             return rows;
         }
@@ -55,11 +54,10 @@ const delet = async(table, data) => {
 
 }
 
-const update = async(table, user, data) => {
+const update = async(table, id, data) => {
 
     try {
 
-        const id = user.id;
         const colval = Object.keys(data).map(function(key) {
             return data[key];
         });

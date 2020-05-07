@@ -49,7 +49,7 @@ router.post('/update', auth, async(req, res) => {
     try {
         const { name, birth, bio } = req.body;
         const birthday = new Date(birth);
-        const data = await update('users', req, { name, birthday, bio });
+        const data = await update('users', req.id, { name, birthday, bio });
         res.status(200).json({ Success: "update" });
     } catch (err) {
         res.status(400).json({ Error: err })
@@ -57,28 +57,73 @@ router.post('/update', auth, async(req, res) => {
 })
 
 router.post('/addPost', auth, async(req, res) => {
-    const { content } = req.body;
-    const postDate = new Date();
-    const user_id = req.id;
-    const post_id = await creat('posts', { content, postDate, user_id });
-    res.status(200).json({ Success: "add post" });
+    try {
+        const { content } = req.body;
+        const postDate = new Date();
+        const user_id = req.id;
+        const user = await find('users', { id: user_id })
+        const username = user[0].name;
+        const post_id = await creat('posts', { content, postDate, user_id, username });
+        res.status(200).json({ Success: "add post" });
+    } catch (err) {
+        res.status(400).json({ Error: err })
+    }
+
 })
+
 router.get('/posts', auth, async(req, res) => {
     try {
         const posts = await find('posts');
-        await posts.map(async(post) => {
-            const user = await find('users', { id: post.user_id });
-            post.userName = user[0].name;
-
-            return post;
-        })
-        console.log(posts);
+        for (let post in posts) {
+            const comments = await find('comments', { post_id: posts[post].id })
+            const likes = await find('likes', { post_id: posts[post].id })
+            posts[post].comments = comments;
+            posts[post].likes = likes;
+        }
         res.status(200).json({ posts });
+    } catch (err) {
+        console.log(err);
+        res.status(400).json({ Error: err })
+    }
+
+})
+
+
+router.post('/addcomment', auth, async(req, res) => {
+    try {
+        const { content, post_id } = req.body;
+        const commentDate = new Date();
+        const user_id = req.id;
+        const user = await find('users', { id: user_id })
+        const username = user[0].name;
+        await creat('comments', { content, commentDate, post_id, user_id, username });
+        const post = await find('posts', { id: post_id })
+        const numbercomments = post[0].numbercomments + 1;
+        await update('posts', post_id, { numbercomments });
+        res.status(200).json({ Success: "add comment" });
     } catch (err) {
         res.status(400).json({ Error: err })
     }
 
 
-})
-router.post('/addcomment');
+});
+
+router.post('/addlike', auth, async(req, res) => {
+    try {
+        const { post_id } = req.body;
+        const likeDate = new Date();
+        const user_id = req.id;
+        const user = await find('users', { id: user_id })
+        const username = user[0].name;
+        await creat('likes', { likeDate, post_id, user_id, username });
+        const post = await find('posts', { id: post_id })
+        const numberlikes = post[0].numberlikes + 1;
+        await update('posts', post_id, { numberlikes });
+        res.status(200).json({ Success: "add like" });
+    } catch (err) {
+        res.status(400).json({ Error: err })
+    }
+
+
+});
 module.exports = router;
