@@ -2,8 +2,8 @@
     "swagger": "2.0",
     "info": {
         "version": "1.0.0",
-        "title": "Yet Another Node.js Blogg Application API",
-        "description": "Yet Another Node.js Blogg Application API",
+        "title": " Posts Application API",
+        "description": " Node.js Posts Application API",
         "license": {
             "name": "MIT",
             "url": "https://opensource.org/licenses/MIT"
@@ -14,6 +14,9 @@
     "tags": [{
         "name": "Users",
         "description": "API for users in the system"
+    }, {
+        "name": "Posts",
+        "description": "API for posts in the system"
     }],
     "schemes": [
         "http"
@@ -53,7 +56,9 @@
                         }
                     }
                 }
-            },
+            }
+        },
+        "/users": {
             "get": {
                 "tags": [
                     "Users"
@@ -99,7 +104,341 @@
                     }
                 }
             }
+        },
+        "/update": {
+            "post": {
+                "tags": [
+                    "Users"
+                ],
+                "description": "update settings user in system",
+                "operationId": "UpdateUser",
+                "parameters": [{
+                        "name": "body",
+                        "in": "body",
+                        "description": "Update data ",
+                        "schema": {
+                            "$ref": "#/definitions/User"
+                        }
+                    },
+                    {
+                        "name": "Authorization",
+                        "in": "header",
+                        "description": "token user ",
+                        "schema": {
+                            "$ref": "#/definitions/token"
+                        }
+                    }
+
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "responses": {
+                    "200": {
+                        "description": " user is Updated",
+                        "schema": {
+                            "type": "string"
+                        },
+                        "examples": {
+                            "sucess": "update"
+                        }
+                    }
+                }
+            }
+        },
+
+        "/addPost": {
+            "post": {
+                "tags": [
+                    "Posts"
+                ],
+                "description": "users add posts in system",
+                "operationId": "AddPost",
+                "parameters": [{
+                        "name": "body",
+                        "in": "body",
+                        "description": "{content} is required",
+                        "schema": {
+                            "$ref": "#/definitions/post"
+                        }
+                    },
+                    {
+                        "name": "Authorization",
+                        "in": "header",
+                        "description": "token user ",
+                        "schema": {
+                            "$ref": "#/definitions/token"
+                        }
+                    }
+
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "responses": {
+                    "200": {
+                        "description": " Adding post ",
+                        "schema": {
+                            "type": "string"
+                        },
+                        "examples": {
+                            "sucess": "add post "
+                        }
+                    }
+                }
+            }
+        },
+
+        "/posts": {
+            "get": {
+                "tags": [
+                    "Posts"
+                ],
+                "description": "View all posts on posts",
+                "operationId": "AllPost",
+                "parameters": [{
+                        "name": "Authorization",
+                        "in": "header",
+                        "description": "token user ",
+                        "schema": {
+                            "$ref": "#/definitions/token"
+                        }
+                    }
+
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "responses": {
+                    "200": {
+                        "description": " All posts ",
+                        "schema": {
+                            "$ref": "#/definitions/posts"
+                        }
+                    }
+                }
+            }
+        },
+
+        "/addcomment": {
+            "post": {
+                "tags": [
+                    "Posts"
+                ],
+                "description": "users add comments in system",
+                "operationId": "AddComment",
+                "parameters": [{
+                        "name": "body",
+                        "in": "body",
+                        "description": " {content, post_id} is required ",
+                        "schema": {
+                            "$ref": "#/definitions/comment"
+                        }
+                    },
+                    {
+                        "name": "Authorization",
+                        "in": "header",
+                        "description": "token user ",
+                        "schema": {
+                            "$ref": "#/definitions/token"
+                        }
+                    }
+
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "responses": {
+                    "200": {
+                        "description": " Adding comment ",
+                        "schema": {
+                            "type": "string",
+                            "examples": {
+                                "sucess": "add comment "
+                            }
+                        }
+
+                    }
+                }
+            }
+        },
+
+        "/addlike": {
+            "post": {
+                "tags": [
+                    "Posts"
+                ],
+                "description": "users add likes on posts",
+                "operationId": "AddLike",
+                "parameters": [{
+                        "name": "body",
+                        "in": "body",
+                        "description": "{post_id} is requird ",
+                        "schema": {
+                            "type": "string",
+                            "$ref": "#/definitions/like"
+                        },
+                        "examples": {
+                            "post_id": 5
+                        }
+                    },
+                    {
+                        "name": "Authorization",
+                        "in": "header",
+                        "description": "token user ",
+                        "schema": {
+                            "$ref": "#/definitions/token"
+                        }
+                    }
+
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "responses": {
+                    "200": {
+                        "description": " Adding likes ",
+                        "schema": {
+                            "type": "string",
+                            "examples": {
+                                "sucess": "add like "
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/editComment": {
+            "post": {
+                "tags": [
+                    "Posts"
+                ],
+                "description": "users edit comments on post",
+                "operationId": "EditComment",
+                "parameters": [{
+                        "name": "body",
+                        "in": "body",
+                        "description": " { content, id } is required ",
+                        "schema": {
+                            "$ref": "#/definitions/comment"
+                        }
+                    },
+                    {
+                        "name": "Authorization",
+                        "in": "header",
+                        "description": "token user ",
+                        "schema": {
+                            "$ref": "#/definitions/token"
+                        }
+                    }
+
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "responses": {
+                    "200": {
+                        "description": " Edit comment ",
+                        "schema": {
+                            "type": "string",
+                            "examples": {
+                                "sucess": "edit comment "
+                            }
+                        }
+
+                    }
+                }
+            }
+        },
+        "/deletComment": {
+            "post": {
+                "tags": [
+                    "Posts"
+                ],
+                "description": "users delet comments on post",
+                "operationId": "DeleteComment",
+                "parameters": [{
+                        "name": "body",
+                        "in": "body",
+                        "description": " { id } is required ",
+                        "schema": {
+                            "$ref": "#/definitions/comment"
+                        }
+                    },
+                    {
+                        "name": "Authorization",
+                        "in": "header",
+                        "description": "token user ",
+                        "schema": {
+                            "$ref": "#/definitions/token"
+                        }
+                    }
+
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "responses": {
+                    "200": {
+                        "description": " delete comment ",
+                        "schema": {
+                            "type": "string",
+                            "examples": {
+                                "sucess": "delete comment "
+                            }
+                        }
+
+                    }
+                }
+            }
+        },
+        "/deletLike": {
+            "post": {
+                "tags": [
+                    "Posts"
+                ],
+                "description": "users delete likes on posts",
+                "operationId": "DeletLikes",
+                "parameters": [{
+                        "name": "body",
+                        "in": "body",
+                        "description": "{post_id} is requird ",
+                        "schema": {
+                            "type": "string",
+                            "$ref": "#/definitions/like"
+                        },
+                        "examples": {
+                            "post_id": 5
+                        }
+                    },
+                    {
+                        "name": "Authorization",
+                        "in": "header",
+                        "description": "token user ",
+                        "schema": {
+                            "$ref": "#/definitions/token"
+                        }
+                    }
+
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "responses": {
+                    "200": {
+                        "description": " Delete likes ",
+                        "schema": {
+                            "type": "string",
+                            "examples": {
+                                "sucess": "Delete like "
+                            }
+                        }
+                    }
+                }
+            }
         }
+
+
     },
     "definitions": {
         "User": {
@@ -116,6 +455,90 @@
                 },
                 "password": {
                     "type": "string"
+                },
+                "birthday": {
+                    "type": "string"
+                },
+                "bio": {
+                    "type": "string"
+                }
+            }
+        },
+        "post": {
+            "required": [
+                "content"
+            ],
+            "properties": {
+                "id": {
+                    "type": "integer"
+                },
+                "content": {
+                    "type": "string"
+                },
+                "postdate": {
+                    "type": "date"
+                },
+                "user_id": {
+                    "type": "integer"
+                },
+                "numberlikes": {
+                    "type": "integer"
+                },
+                "numbercomments": {
+                    "type": "integer"
+                },
+                "usernsme": {
+                    "type": "string"
+                },
+                "likes": {
+                    "type": "array",
+                    "$ref": "#/definitions/like"
+                },
+                "comments": {
+                    "type": "array",
+                    "$ref": "#/definitions/comment"
+                }
+
+            }
+        },
+        "like": {
+            "properties": {
+                "id": {
+                    "type": "integer"
+                },
+                "likedate": {
+                    "type": "date"
+                },
+                "user_id": {
+                    "type": "integer"
+                },
+                "post_id": {
+                    "type": "integer"
+                },
+                "username": {
+                    "type": "string"
+                }
+            }
+        },
+        "comment": {
+            "properties": {
+                "id": {
+                    "type": "integer"
+                },
+                "content": {
+                    "type": "string"
+                },
+                "commentdate": {
+                    "type": "string"
+                },
+                "user_id": {
+                    "type": "integer"
+                },
+                "post_id": {
+                    "type": "integer"
+                },
+                "username": {
+                    "type": "string"
                 }
             }
         },
@@ -130,6 +553,10 @@
         "Users": {
             "type": "array",
             "$ref": "#/definitions/User"
+        },
+        "posts": {
+            "type": "array",
+            "$ref": "#/definitions/post"
         }
     }
 }

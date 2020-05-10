@@ -54,14 +54,15 @@ const delet = async(table, data) => {
 
 }
 
-const update = async(table, id, data) => {
+const update = async(table, where, data) => {
 
     try {
-
+        console.log(where);
         const colval = Object.keys(data).map(function(key) {
             return data[key];
         });
-        const UpdateQuery = UpdateQuerytable(table, id, data);
+        const UpdateQuery = UpdateQuerytable(table, where, data);
+        console.log(UpdateQuery);
         await db.query(`${UpdateQuery}`, colval);
 
     } catch (err) {

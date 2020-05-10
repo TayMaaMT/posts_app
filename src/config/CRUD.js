@@ -57,7 +57,7 @@ const DeletQuerytable = (table, cols) => {
 }
 
 
-const UpdateQuerytable = (table, id, cols) => {
+const UpdateQuerytable = (table, data, cols) => {
     // beginning of update query
     let query = ['UPDATE'];
     query.push(table);
@@ -68,7 +68,13 @@ const UpdateQuerytable = (table, id, cols) => {
         set.push(key + ' = ($' + (i + 1) + ')');
     });
     query.push(set.join(', '));
-    query.push('WHERE id = ' + id);
+    query.push('WHERE ')
+    let set2 = [];
+    Object.keys(data).forEach(function(key, i) {
+        set2.push(`${key} = ${data[key]}`);
+    });
+
+    query.push(set2.join(' AND '));
     // Return a complete query string
     return query.join(' ');
 }
