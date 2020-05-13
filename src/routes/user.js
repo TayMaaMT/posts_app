@@ -1,6 +1,9 @@
 const router = require('express').Router();
 const bcrypt = require('bcryptjs');
+const multer = require('multer');
+const sharp = require('sharp')
 const auth = require('../middleware/auth');
+const { User, Settings } = require('../config/classes');
 const { creat, delet, genarateAuthToken, getuser, findByCredentials, update, find } = require('../models/user');
 
 router.get('/users', async(req, res) => {
@@ -45,11 +48,13 @@ router.get('/profile', auth, async(req, res) => {
 
 })
 
-router.post('/update', auth, async(req, res) => {
+router.put('/update', auth, async(req, res) => {
     try {
-        const { name, birth, bio } = req.body;
-        const birthday = new Date(birth);
-        await update('users', { id: req.id }, { name, birthday, bio });
+        const { name, birthday, bio } = req.body;
+        // const birthday = new Date(birth);
+        const Data = new Settings({ name, birthday, bio });
+        console.log(Data);
+        await update('users', { id: req.id }, Data);
         if (name) {
             await update('posts', { user_id: req.id }, { username: name });
             await update('likes', { user_id: req.id }, { username: name });
@@ -61,14 +66,30 @@ router.post('/update', auth, async(req, res) => {
     }
 })
 
-router.post('/addPost', auth, async(req, res) => {
+const upload = multer({
+    dest: 'postImages',
+    storage: multer.memoryStorage(),
+    limits: {
+        fieldSize: 1000000
+    },
+    fileFilter(req, file, cb) {
+        if (!file.originalname.match(/\.(jpg|png|jpeg)$/)) {
+            return cb(new Error('please upload a imge file'))
+        }
+        cb(undefined, true)
+    }
+})
+
+router.post('/addPost', auth, upload.single('postImge'), async(req, res) => {
     try {
+        const image = await sharp(req.file.buffer).resize(250, 250).png().toBuffer();
+        console.log(image)
         const { content } = req.body;
         const postDate = new Date();
         const user_id = req.id;
         const user = await find('users', { id: user_id })
         const username = user[0].name;
-        const post_id = await creat('posts', { content, postDate, user_id, username });
+        const post_id = await creat('posts', { content, postDate, user_id, username, image });
         res.status(200).json({ Success: "add post" });
     } catch (err) {
         res.status(400).json({ Error: err })
@@ -76,7 +97,7 @@ router.post('/addPost', auth, async(req, res) => {
 
 })
 
-router.get('/posts', auth, async(req, res) => {
+router.get('/posts', async(req, res) => {
     try {
         const posts = await find('posts');
         for (let post in posts) {
@@ -86,6 +107,19 @@ router.get('/posts', auth, async(req, res) => {
             posts[post].likes = likes;
         }
         res.status(200).json({ posts });
+    } catch (err) {
+        console.log(err);
+        res.status(400).json({ Error: err })
+    }
+
+})
+
+router.get('/post/:id/img', async(req, res) => {
+    try {
+        const post = await find('posts', { id: req.params.id });
+        console.log(post);
+        res.set('Content-Type', 'image/jpg');
+        res.send(post[0].image);
     } catch (err) {
         console.log(err);
         res.status(400).json({ Error: err })
@@ -132,7 +166,7 @@ router.post('/addlike', auth, async(req, res) => {
     }
 });
 
-router.post('/editComment', auth, async(req, res) => {
+router.put('/editComment', auth, async(req, res) => {
     try {
         const { content, id } = req.body;
         const commentDate = new Date();
@@ -151,7 +185,7 @@ router.post('/editComment', auth, async(req, res) => {
     }
 })
 
-router.post('/deletComment', auth, async(req, res) => {
+router.delete('/deletComment', auth, async(req, res) => {
     try {
         const { id } = req.body;
         const user_id = req.id;
@@ -175,7 +209,7 @@ router.post('/deletComment', auth, async(req, res) => {
 
 
 
-router.post('/deletLike', auth, async(req, res) => {
+router.delete('/deletLike', auth, async(req, res) => {
     try {
         const { post_id } = req.body;
         const user_id = req.id;
