@@ -106,7 +106,7 @@
             }
         },
         "/update": {
-            "post": {
+            "put": {
                 "tags": [
                     "Users"
                 ],
@@ -155,12 +155,18 @@
                 "description": "users add posts in system",
                 "operationId": "AddPost",
                 "parameters": [{
-                        "name": "body",
-                        "in": "body",
+                        "name": "content",
+                        "in": "formData",
+                        "required": true,
                         "description": "{content} is required",
-                        "schema": {
-                            "$ref": "#/definitions/post"
-                        }
+                        "type": "string"
+                    },
+                    {
+                        "name": "postImge",
+                        "in": "formData",
+                        "description": "image to upload",
+                        "required": true,
+                        "type": "file"
                     },
                     {
                         "name": "Authorization",
@@ -309,7 +315,7 @@
             }
         },
         "/editComment": {
-            "post": {
+            "put": {
                 "tags": [
                     "Posts"
                 ],
@@ -351,7 +357,7 @@
             }
         },
         "/deletComment": {
-            "post": {
+            "delete": {
                 "tags": [
                     "Posts"
                 ],
@@ -393,7 +399,7 @@
             }
         },
         "/deletLike": {
-            "post": {
+            "delete": {
                 "tags": [
                     "Posts"
                 ],
@@ -456,7 +462,7 @@
                 "password": {
                     "type": "string"
                 },
-                "birthday": {
+                "birth": {
                     "type": "string"
                 },
                 "bio": {
