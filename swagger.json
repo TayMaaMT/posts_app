@@ -9,7 +9,7 @@
             "url": "https://opensource.org/licenses/MIT"
         }
     },
-    "host": "https://post-app-taymaa.herokuapp.com",
+    "host": "post-app-taymaa.herokuapp.com",
     "basePath": "/api/v1",
     "tags": [{
         "name": "Users",
