@@ -2,6 +2,7 @@ const router = require('express').Router();
 const bcrypt = require('bcryptjs');
 const multer = require('multer');
 const sharp = require('sharp')
+const fs = require('fs');
 const auth = require('../middleware/auth');
 const { User, Settings } = require('../config/classes');
 const { creat, delet, genarateAuthToken, getuser, findByCredentials, update, find } = require('../models/user');
@@ -67,7 +68,7 @@ router.put('/update', auth, async(req, res) => {
 })
 
 const upload = multer({
-    dest: 'postImages',
+    dest: 'images',
     storage: multer.memoryStorage(),
     limits: {
         fieldSize: 1000000
@@ -80,10 +81,31 @@ const upload = multer({
     }
 })
 
+router.post('/upload', upload.single('image'), async(req, res) => {
+    fs.writeFileSync('./src/images/' + new Date().valueOf() + req.file.originalname, req.file.buffer)
+    res.send(req.file);
+
+})
+
+router.get('/image', async(req, res) => {
+    const image = __dirname + '/uploads/images/f128448c32139acec6ffb532964e.jpg';
+    console.log(fs.readFileSync('./src/images/1589399988278EPOwa4PXUAEearc.jpg'));
+    // res.status(200).contentType("image/jpg").send(fs.readFileSync('./src/images/1589399988278EPOwa4PXUAEearc.jpg'))
+    // const i = await sharp(image).resize(250, 250).png().toBuffer();
+    res.send({ imagq: fs.readFileSync('./src/images/1589399988278EPOwa4PXUAEearc.jpg') });
+});
+
+
+
 router.post('/addPost', auth, upload.single('postImge'), async(req, res) => {
     try {
-        const image = await sharp(req.file.buffer).resize(250, 250).png().toBuffer();
-        console.log(image)
+        //const image = await sharp(req.file.buffer).resize(250, 250).png().toBuffer();
+        console.log(req.file);
+        let image;
+        if (req.file) {
+            image = new Date().valueOf() + req.file.originalname;
+            fs.writeFileSync('./src/images/' + image, req.file.buffer)
+        }
         const { content } = req.body;
         const postDate = new Date();
         const user_id = req.id;
@@ -92,6 +114,7 @@ router.post('/addPost', auth, upload.single('postImge'), async(req, res) => {
         const post_id = await creat('posts', { content, postDate, user_id, username, image });
         res.status(200).json({ Success: "add post" });
     } catch (err) {
+        console.log(err);
         res.status(400).json({ Error: err })
     }
 
@@ -103,6 +126,9 @@ router.get('/posts', async(req, res) => {
         for (let post in posts) {
             const comments = await find('comments', { post_id: posts[post].id })
             const likes = await find('likes', { post_id: posts[post].id })
+            if (posts[post].image) {
+                posts[post].image = fs.readFileSync('./src/images/' + posts[post].image)
+            }
             posts[post].comments = comments;
             posts[post].likes = likes;
         }
