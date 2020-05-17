@@ -81,26 +81,9 @@ const upload = multer({
     }
 })
 
-router.post('/upload', upload.single('image'), async(req, res) => {
-    fs.writeFileSync('./src/images/' + new Date().valueOf() + req.file.originalname, req.file.buffer)
-    res.send(req.file);
-
-})
-
-router.get('/image', async(req, res) => {
-    const image = __dirname + '/uploads/images/f128448c32139acec6ffb532964e.jpg';
-    console.log(fs.readFileSync('./src/images/1589399988278EPOwa4PXUAEearc.jpg'));
-    // res.status(200).contentType("image/jpg").send(fs.readFileSync('./src/images/1589399988278EPOwa4PXUAEearc.jpg'))
-    // const i = await sharp(image).resize(250, 250).png().toBuffer();
-    res.send({ imagq: fs.readFileSync('./src/images/1589399988278EPOwa4PXUAEearc.jpg') });
-});
-
-
-
 router.post('/addPost', auth, upload.single('postImge'), async(req, res) => {
     try {
         //const image = await sharp(req.file.buffer).resize(250, 250).png().toBuffer();
-        console.log(req.file);
         let image;
         if (req.file) {
             image = new Date().valueOf() + req.file.originalname;
